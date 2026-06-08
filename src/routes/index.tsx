@@ -178,7 +178,6 @@ function Index() {
 
   const phaseLabels = ["Initializing connection...", "Verifying credentials...", "Contacting server..."];
 
-  return (
   if (status === "success") {
     return <GlobalDominationMap />;
   }
