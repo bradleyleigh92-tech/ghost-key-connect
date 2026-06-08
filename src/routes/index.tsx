@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect, useCallback } from "react";
+import GlobalDominationMap from "@/components/GlobalDominationMap";
 
 export const Route = createFileRoute("/")({
   head: () => ({
