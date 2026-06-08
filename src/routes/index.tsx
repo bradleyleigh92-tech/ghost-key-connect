@@ -97,7 +97,7 @@ function Index() {
   const [vpsAddress, setVpsAddress] = useState("");
   const [username, setUsername] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-  const [status, setStatus] = useState<"idle" | "connecting" | "failed">("idle");
+  const [status, setStatus] = useState<"idle" | "connecting" | "failed" | "success">("idle");
   const [phase, setPhase] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const logIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
