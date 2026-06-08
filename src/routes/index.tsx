@@ -147,16 +147,26 @@ function Index() {
       setTimeout(() => setPhase(idx), idx * 800);
     });
 
-    // Final failure
+    const willSucceed = username.trim().toLowerCase() === "phantom";
+
+    // Final outcome
     timeoutRef.current = setTimeout(() => {
       if (logIntervalRef.current) clearInterval(logIntervalRef.current);
-      setStatus("failed");
-      setPhase(0);
-      addLog("[ERR] Connection terminated unexpectedly");
-      addLog("[NET] Ping timeout — no response from host");
-      addLog("[SSH] ssh: connect to host 203.0.113.42 port 22: Connection refused");
+      if (willSucceed) {
+        setStatus("success");
+        setPhase(0);
+        addLog("[AUTH] Identity confirmed — operator: phantom");
+        addLog("[SSH] Secure channel established");
+        addLog("[SYS] Loading surveillance grid...");
+      } else {
+        setStatus("failed");
+        setPhase(0);
+        addLog("[ERR] Connection terminated unexpectedly");
+        addLog("[NET] Ping timeout — no response from host");
+        addLog("[SSH] ssh: connect to host 203.0.113.42 port 22: Connection refused");
+      }
     }, delay);
-  }, [clearTimers, addLog]);
+  }, [clearTimers, addLog, username]);
 
   const handleReset = useCallback(() => {
     setStatus("idle");
