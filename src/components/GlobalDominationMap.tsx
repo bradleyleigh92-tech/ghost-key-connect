@@ -275,28 +275,46 @@ export default function GlobalDominationMap() {
             </g>
           </svg>
 
-          {/* Animated data lines (SVG with full coords) */}
+          {/* Animated data lines — curved arcs across continents */}
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 50" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="oklch(0.75 0.18 145)" stopOpacity="0" />
+                <stop offset="50%" stopColor="oklch(0.75 0.18 145)" stopOpacity="1" />
+                <stop offset="100%" stopColor="oklch(0.65 0.12 220)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
             {links.map((l) => {
               const a = points[l.a];
               const b = points[l.b];
+              const ax = a.x, ay = a.y / 2;
+              const bx = b.x, by = b.y / 2;
+              const mx = (ax + bx) / 2;
+              const my = (ay + by) / 2;
+              const dist = Math.hypot(bx - ax, by - ay);
+              // Curve upward proportionally to distance for that great-circle arc feel
+              const cy = my - Math.min(18, dist * 0.35);
+              const d = `M ${ax} ${ay} Q ${mx} ${cy} ${bx} ${by}`;
               const age = (Date.now() - l.start) / 2500;
               const opacity = Math.max(0, 1 - age);
               return (
                 <g key={l.id}>
-                  <line
-                    x1={a.x} y1={a.y / 2} x2={b.x} y2={b.y / 2}
-                    stroke="oklch(0.65 0.18 145)"
-                    strokeWidth="0.15"
-                    opacity={opacity * 0.8}
-                    strokeDasharray="0.5 0.5"
-                  >
-                    <animate attributeName="stroke-dashoffset" from="0" to="-2" dur="0.8s" repeatCount="indefinite" />
-                  </line>
+                  <path
+                    d={d}
+                    fill="none"
+                    stroke="url(#arcGrad)"
+                    strokeWidth="0.25"
+                    opacity={opacity}
+                    strokeLinecap="round"
+                  />
+                  <circle r="0.35" fill="oklch(0.85 0.18 145)" opacity={opacity}>
+                    <animateMotion dur="1.2s" repeatCount="indefinite" path={d} />
+                  </circle>
                 </g>
               );
             })}
           </svg>
+
 
           {/* Nodes */}
           {points.map((p, i) => {
