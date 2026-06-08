@@ -201,25 +201,68 @@ export default function GlobalDominationMap() {
             <rect width="100%" height="100%" fill="url(#grid)" />
           </svg>
 
-          {/* World map silhouette (simplified continents) */}
+          {/* World map silhouette — detailed continents */}
           <svg
-            className="absolute inset-0 h-full w-full opacity-30"
+            className="absolute inset-0 h-full w-full"
             viewBox="0 0 1000 500"
             preserveAspectRatio="none"
           >
-            <g fill="oklch(0.65 0.18 145 / 0.4)" stroke="oklch(0.65 0.18 145 / 0.6)" strokeWidth="0.8">
+            <defs>
+              <linearGradient id="landFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="oklch(0.65 0.18 145 / 0.22)" />
+                <stop offset="100%" stopColor="oklch(0.65 0.18 145 / 0.06)" />
+              </linearGradient>
+              <filter id="landGlow">
+                <feGaussianBlur stdDeviation="0.5" />
+              </filter>
+            </defs>
+            <g
+              fill="url(#landFill)"
+              stroke="oklch(0.65 0.18 145 / 0.75)"
+              strokeWidth="0.6"
+              strokeLinejoin="round"
+              filter="url(#landGlow)"
+            >
               {/* North America */}
-              <path d="M 100,120 Q 140,90 200,100 L 260,115 L 280,160 L 270,200 L 230,240 L 180,250 L 140,230 L 110,190 Z" />
+              <path d="M 90,95 L 130,75 L 175,72 L 220,85 L 260,95 L 290,108 L 298,132 L 285,158 L 268,178 L 278,198 L 262,218 L 238,238 L 212,248 L 185,250 L 158,243 L 138,222 L 120,200 L 105,175 L 92,145 L 86,118 Z" />
+              {/* Greenland */}
+              <path d="M 340,55 L 382,50 L 408,68 L 412,92 L 395,112 L 365,118 L 345,102 L 335,80 Z" />
+              {/* Central America */}
+              <path d="M 212,248 L 232,262 L 248,278 L 262,290 L 256,300 L 240,294 L 224,278 L 214,262 Z" />
               {/* South America */}
-              <path d="M 260,270 Q 290,260 310,290 L 320,360 L 300,420 L 270,440 L 250,400 L 245,330 Z" />
-              {/* Europe */}
-              <path d="M 460,110 L 530,100 L 555,140 L 540,170 L 490,175 L 465,150 Z" />
+              <path d="M 268,288 L 296,278 L 322,288 L 336,312 L 342,348 L 326,388 L 306,422 L 286,448 L 268,456 L 256,440 L 250,410 L 246,375 L 250,340 L 258,310 Z" />
+              {/* Iceland */}
+              <path d="M 410,80 L 426,78 L 432,90 L 418,94 L 408,86 Z" />
+              {/* UK / Ireland */}
+              <path d="M 440,108 L 454,105 L 458,122 L 446,130 L 436,120 Z" />
+              {/* Europe (mainland) */}
+              <path d="M 462,108 L 488,100 L 514,96 L 540,100 L 562,112 L 572,128 L 562,142 L 540,152 L 514,158 L 488,158 L 466,150 L 456,135 L 458,120 Z" />
+              {/* Scandinavia */}
+              <path d="M 510,72 L 532,68 L 548,82 L 540,100 L 522,102 L 508,90 Z" />
               {/* Africa */}
-              <path d="M 480,200 L 560,195 L 590,260 L 580,340 L 540,400 L 500,380 L 485,310 L 475,250 Z" />
-              {/* Asia */}
-              <path d="M 560,90 Q 650,80 760,100 L 820,130 L 850,180 L 830,220 L 780,250 L 700,240 L 620,210 L 580,170 Z" />
+              <path d="M 478,178 L 512,172 L 545,172 L 572,180 L 592,202 L 602,232 L 606,268 L 594,302 L 574,338 L 548,368 L 524,388 L 500,380 L 482,356 L 472,326 L 468,290 L 470,255 L 474,218 Z" />
+              {/* Middle East */}
+              <path d="M 572,168 L 608,166 L 628,180 L 632,202 L 615,218 L 590,214 L 575,196 Z" />
+              {/* Asia (mainland) */}
+              <path d="M 562,112 L 605,102 L 655,96 L 705,94 L 755,98 L 798,108 L 832,124 L 858,144 L 872,168 L 866,192 L 845,216 L 815,230 L 780,234 L 745,224 L 712,214 L 680,208 L 648,202 L 618,192 L 595,178 L 578,160 L 568,138 Z" />
+              {/* India */}
+              <path d="M 678,208 L 716,214 L 722,242 L 712,266 L 696,282 L 680,266 L 672,240 Z" />
+              {/* Southeast Asia peninsula */}
+              <path d="M 770,238 L 800,244 L 820,256 L 814,276 L 796,286 L 776,278 L 768,260 Z" />
+              {/* Korea */}
+              <path d="M 838,170 L 850,170 L 854,188 L 845,198 L 836,188 Z" />
+              {/* Japan */}
+              <path d="M 866,158 L 880,152 L 890,170 L 884,192 L 872,200 L 864,184 Z" />
+              {/* Indonesia */}
+              <path d="M 790,300 L 830,294 L 858,302 L 852,316 L 822,322 L 792,316 Z" />
+              {/* Philippines */}
+              <path d="M 848,262 L 862,260 L 868,278 L 856,288 L 846,278 Z" />
               {/* Australia */}
-              <path d="M 780,340 L 860,335 L 880,375 L 850,405 L 790,400 L 770,370 Z" />
+              <path d="M 798,352 L 842,346 L 878,350 L 898,366 L 900,388 L 880,408 L 845,414 L 810,410 L 790,392 L 788,370 Z" />
+              {/* New Zealand */}
+              <path d="M 906,408 L 920,406 L 924,422 L 912,432 L 902,424 Z" />
+              {/* Antarctica strip */}
+              <path d="M 40,478 L 960,478 L 960,498 L 40,498 Z" />
             </g>
           </svg>
 
