@@ -97,17 +97,26 @@ export default function GlobalDominationMap() {
       });
     }, 380);
 
-    // Spawn data lines
+    // Spawn data lines — prefer cross-continent (geographically distant) pairs
     const linkInterval = setInterval(() => {
       setLinks((prev) => {
         const active = Array.from(activeNodes);
         if (active.length < 2) return prev;
-        const a = active[Math.floor(Math.random() * active.length)];
-        let b = active[Math.floor(Math.random() * active.length)];
-        if (a === b) return prev;
+        let best: [number, number] | null = null;
+        let bestDist = -1;
+        for (let t = 0; t < 6; t++) {
+          const a = active[Math.floor(Math.random() * active.length)];
+          const b = active[Math.floor(Math.random() * active.length)];
+          if (a === b) continue;
+          const pa = points[a], pb = points[b];
+          const d = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+          if (d > bestDist) { bestDist = d; best = [a, b]; }
+        }
+        if (!best) return prev;
         const id = linkId.current++;
-        const next = [...prev, { id, a, b, start: Date.now() }];
-        return next.slice(-12);
+        const next = [...prev, { id, a: best[0], b: best[1], start: Date.now() }];
+        return next.slice(-14);
+
       });
     }, 300);
 
