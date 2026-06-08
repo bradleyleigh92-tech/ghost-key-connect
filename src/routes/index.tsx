@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect, useCallback } from "react";
+import GlobalDominationMap from "@/components/GlobalDominationMap";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -97,7 +98,7 @@ function Index() {
   const [vpsAddress, setVpsAddress] = useState("");
   const [username, setUsername] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-  const [status, setStatus] = useState<"idle" | "connecting" | "failed">("idle");
+  const [status, setStatus] = useState<"idle" | "connecting" | "failed" | "success">("idle");
   const [phase, setPhase] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const logIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -147,16 +148,26 @@ function Index() {
       setTimeout(() => setPhase(idx), idx * 800);
     });
 
-    // Final failure
+    const willSucceed = username.trim().toLowerCase() === "phantom";
+
+    // Final outcome
     timeoutRef.current = setTimeout(() => {
       if (logIntervalRef.current) clearInterval(logIntervalRef.current);
-      setStatus("failed");
-      setPhase(0);
-      addLog("[ERR] Connection terminated unexpectedly");
-      addLog("[NET] Ping timeout — no response from host");
-      addLog("[SSH] ssh: connect to host 203.0.113.42 port 22: Connection refused");
+      if (willSucceed) {
+        setStatus("success");
+        setPhase(0);
+        addLog("[AUTH] Identity confirmed — operator: phantom");
+        addLog("[SSH] Secure channel established");
+        addLog("[SYS] Loading surveillance grid...");
+      } else {
+        setStatus("failed");
+        setPhase(0);
+        addLog("[ERR] Connection terminated unexpectedly");
+        addLog("[NET] Ping timeout — no response from host");
+        addLog("[SSH] ssh: connect to host 203.0.113.42 port 22: Connection refused");
+      }
     }, delay);
-  }, [clearTimers, addLog]);
+  }, [clearTimers, addLog, username]);
 
   const handleReset = useCallback(() => {
     setStatus("idle");
@@ -166,6 +177,10 @@ function Index() {
   }, [clearTimers]);
 
   const phaseLabels = ["Initializing connection...", "Verifying credentials...", "Contacting server..."];
+
+  if (status === "success") {
+    return <GlobalDominationMap />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
