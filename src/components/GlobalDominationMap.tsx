@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import TerminalConsole from "./TerminalConsole";
+import OperatorLauncher from "./OperatorLauncher";
+import VisitorLocations from "./VisitorLocations";
+
 
 
 
