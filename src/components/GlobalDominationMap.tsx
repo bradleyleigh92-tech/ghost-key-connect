@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import TerminalConsole from "./TerminalConsole";
+
+
 
 // Approximate lat/lon for major nodes (converted to % on a 2:1 equirectangular map)
 const NODES: { name: string; lat: number; lon: number }[] = [
