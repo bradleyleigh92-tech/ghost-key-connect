@@ -157,7 +157,22 @@ export default function GlobalDominationMap() {
       clearTimeout(completeTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [launched]);
+
+  // Asymptotic progress that never reaches 100%
+  useEffect(() => {
+    if (!launched) return;
+    const id = setInterval(() => {
+      setProgress((p) => {
+        const remaining = 99.4 - p;
+        if (remaining <= 0.01) return p;
+        // slow easing — gets exponentially slower as it approaches 99.4
+        return p + Math.max(0.02, remaining * 0.012);
+      });
+    }, 450);
+    return () => clearInterval(id);
+  }, [launched]);
+
 
   useEffect(() => {
     // Re-run secure check when activeNodes changes
