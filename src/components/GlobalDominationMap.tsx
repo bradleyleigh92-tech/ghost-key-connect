@@ -82,6 +82,8 @@ export default function GlobalDominationMap() {
   const points = useMemo(() => NODES.map((n) => ({ ...n, ...project(n.lat, n.lon) })), []);
 
   useEffect(() => {
+    if (!launched) return;
+
     // Scan nodes progressively
     const scanInterval = setInterval(() => {
       setActiveNodes((prev) => {
