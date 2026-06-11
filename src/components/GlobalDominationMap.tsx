@@ -66,15 +66,18 @@ interface Link {
 }
 
 export default function GlobalDominationMap() {
+  const [launched, setLaunched] = useState(false);
   const [activeNodes, setActiveNodes] = useState<Set<number>>(new Set());
   const [securedNodes, setSecuredNodes] = useState<Set<number>>(new Set());
   const [links, setLinks] = useState<Link[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [glitch, setGlitch] = useState(false);
   const [complete, setComplete] = useState(false);
+  const [progress, setProgress] = useState(0);
   const linkId = useRef(0);
   const logIdx = useRef(0);
   const logBottomRef = useRef<HTMLDivElement>(null);
+
 
   const points = useMemo(() => NODES.map((n) => ({ ...n, ...project(n.lat, n.lon) })), []);
 
