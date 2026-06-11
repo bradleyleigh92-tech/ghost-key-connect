@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import TerminalConsole from "./TerminalConsole";
+import OperatorLauncher from "./OperatorLauncher";
+import VisitorLocations from "./VisitorLocations";
+
 
 
 
@@ -63,19 +66,24 @@ interface Link {
 }
 
 export default function GlobalDominationMap() {
+  const [launched, setLaunched] = useState(false);
   const [activeNodes, setActiveNodes] = useState<Set<number>>(new Set());
   const [securedNodes, setSecuredNodes] = useState<Set<number>>(new Set());
   const [links, setLinks] = useState<Link[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [glitch, setGlitch] = useState(false);
   const [complete, setComplete] = useState(false);
+  const [progress, setProgress] = useState(0);
   const linkId = useRef(0);
   const logIdx = useRef(0);
   const logBottomRef = useRef<HTMLDivElement>(null);
 
+
   const points = useMemo(() => NODES.map((n) => ({ ...n, ...project(n.lat, n.lon) })), []);
 
   useEffect(() => {
+    if (!launched) return;
+
     // Scan nodes progressively
     const scanInterval = setInterval(() => {
       setActiveNodes((prev) => {
@@ -149,7 +157,22 @@ export default function GlobalDominationMap() {
       clearTimeout(completeTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [launched]);
+
+  // Asymptotic progress that never reaches 100%
+  useEffect(() => {
+    if (!launched) return;
+    const id = setInterval(() => {
+      setProgress((p) => {
+        const remaining = 99.4 - p;
+        if (remaining <= 0.01) return p;
+        // slow easing — gets exponentially slower as it approaches 99.4
+        return p + Math.max(0.02, remaining * 0.012);
+      });
+    }, 450);
+    return () => clearInterval(id);
+  }, [launched]);
+
 
   useEffect(() => {
     // Re-run secure check when activeNodes changes
@@ -168,7 +191,12 @@ export default function GlobalDominationMap() {
     return () => clearInterval(prune);
   }, []);
 
+  if (!launched) {
+    return <OperatorLauncher onLaunch={() => setLaunched(true)} />;
+  }
+
   return (
+
     <div className={`relative min-h-screen w-full overflow-hidden bg-background ${glitch ? "glitch-active" : ""}`}>
       {/* Scanlines */}
       <div className="pointer-events-none absolute inset-0 z-30 scanlines opacity-30" />
@@ -193,7 +221,18 @@ export default function GlobalDominationMap() {
           <span>NODES: <span className="text-terminal-cyan">{activeNodes.size}</span>/{NODES.length}</span>
           <span>SECURED: <span className="text-terminal-green">{securedNodes.size}</span></span>
           <span>TUNNELS: <span className="text-terminal-yellow">{links.length}</span></span>
+          <span className="flex items-center gap-2">
+            INJECT:
+            <span className="relative inline-block h-1.5 w-32 overflow-hidden rounded bg-border">
+              <span
+                className="absolute inset-y-0 left-0 bg-terminal-green transition-all duration-500"
+                style={{ width: `${progress}%`, boxShadow: "0 0 6px var(--terminal-green)" }}
+              />
+            </span>
+            <span className="w-12 text-terminal-green tabular-nums">{progress.toFixed(2)}%</span>
+          </span>
         </div>
+
       </div>
 
       {/* Map area */}
@@ -449,7 +488,13 @@ export default function GlobalDominationMap() {
               })}
             </div>
           </div>
+
+          {/* Visitor geo intel — spans full width */}
+          <div className="lg:col-span-3">
+            <VisitorLocations />
+          </div>
         </div>
+
       </div>
     </div>
   );
