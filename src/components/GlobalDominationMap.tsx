@@ -191,7 +191,12 @@ export default function GlobalDominationMap() {
     return () => clearInterval(prune);
   }, []);
 
+  if (!launched) {
+    return <OperatorLauncher onLaunch={() => setLaunched(true)} />;
+  }
+
   return (
+
     <div className={`relative min-h-screen w-full overflow-hidden bg-background ${glitch ? "glitch-active" : ""}`}>
       {/* Scanlines */}
       <div className="pointer-events-none absolute inset-0 z-30 scanlines opacity-30" />
