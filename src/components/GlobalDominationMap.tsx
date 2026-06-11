@@ -488,7 +488,13 @@ export default function GlobalDominationMap() {
               })}
             </div>
           </div>
+
+          {/* Visitor geo intel — spans full width */}
+          <div className="lg:col-span-3">
+            <VisitorLocations />
+          </div>
         </div>
+
       </div>
     </div>
   );
