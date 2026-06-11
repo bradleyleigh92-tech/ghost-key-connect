@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import TerminalConsole from "./TerminalConsole";
+
+
 
 // Approximate lat/lon for major nodes (converted to % on a 2:1 equirectangular map)
 const NODES: { name: string; lat: number; lon: number }[] = [
@@ -363,18 +366,48 @@ export default function GlobalDominationMap() {
           )}
         </div>
 
-        {/* Terminal log */}
+        {/* Dashboard grid */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Live terminal */}
+          <div className="lg:col-span-2 h-80">
+            <TerminalConsole />
+          </div>
+
+          {/* Active sessions */}
+          <div className="rounded-md border border-terminal-green/30 bg-terminal p-3 font-mono text-[11px]">
+            <div className="mb-2 border-b border-terminal-green/20 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+              // active_sessions //
+            </div>
+            <div className="space-y-1.5">
+              {points.slice(0, 8).map((p, i) => {
+                const isActive = activeNodes.has(i);
+                const isSecured = securedNodes.has(i);
+                const state = !isActive ? "QUEUED" : isSecured ? "OWNED" : "BREACHING";
+                const color = !isActive
+                  ? "text-muted-foreground"
+                  : isSecured
+                  ? "text-terminal-green"
+                  : "text-terminal-red";
+                return (
+                  <div key={p.name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? (isSecured ? "bg-terminal-green" : "bg-terminal-red animate-pulse") : "bg-muted-foreground/40"}`} />
+                      <span className="text-foreground/80">{p.name}</span>
+                    </div>
+                    <span className={`text-[10px] ${color}`}>{state}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Log feed */}
           <div className="lg:col-span-2 rounded-md border border-terminal-green/30 bg-terminal p-3 font-mono text-[11px] leading-relaxed">
             <div className="mb-2 flex items-center justify-between border-b border-terminal-green/20 pb-1">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">// op_log //</span>
-              <div className="flex gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-terminal-red" />
-                <span className="h-2 w-2 rounded-full bg-terminal-yellow" />
-                <span className="h-2 w-2 rounded-full bg-terminal-green" />
-              </div>
+              <span className="text-[10px] text-terminal-green">streaming</span>
             </div>
-            <div className="h-48 overflow-y-auto pr-1">
+            <div className="h-40 overflow-y-auto pr-1">
               {logs.map((line, i) => {
                 const color = line.includes("[ROOT]") || line.includes("complete")
                   ? "text-terminal-green"
@@ -391,6 +424,7 @@ export default function GlobalDominationMap() {
             </div>
           </div>
 
+          {/* Threat matrix */}
           <div className="rounded-md border border-terminal-green/30 bg-terminal p-3 font-mono text-[11px]">
             <div className="mb-2 border-b border-terminal-green/20 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
               // threat_matrix //
@@ -420,3 +454,4 @@ export default function GlobalDominationMap() {
     </div>
   );
 }
+
