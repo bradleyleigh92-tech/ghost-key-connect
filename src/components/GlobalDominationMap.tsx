@@ -275,44 +275,6 @@ export default function GlobalDominationMap() {
             </g>
           </svg>
 
-          {/* Static mesh — arrows interconnecting all nodes */}
-          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 50" preserveAspectRatio="none">
-            <defs>
-              <marker
-                id="meshArrow"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="3"
-                markerHeight="3"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="oklch(0.75 0.18 145 / 0.7)" />
-              </marker>
-            </defs>
-            {points.flatMap((a, i) =>
-              points.slice(i + 1).map((b, j) => {
-                const ax = a.x, ay = a.y / 2;
-                const bx = b.x, by = b.y / 2;
-                const mx = (ax + bx) / 2;
-                const my = (ay + by) / 2;
-                const dist = Math.hypot(bx - ax, by - ay);
-                const cy = my - Math.min(14, dist * 0.28);
-                const d = `M ${ax} ${ay} Q ${mx} ${cy} ${bx} ${by}`;
-                return (
-                  <path
-                    key={`mesh-${i}-${i + 1 + j}`}
-                    d={d}
-                    fill="none"
-                    stroke="oklch(0.65 0.18 145 / 0.28)"
-                    strokeWidth="0.12"
-                    markerEnd="url(#meshArrow)"
-                  />
-                );
-              })
-            )}
-          </svg>
-
           {/* Animated data lines — curved arcs across continents */}
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 50" preserveAspectRatio="none">
             <defs>
@@ -352,7 +314,6 @@ export default function GlobalDominationMap() {
               );
             })}
           </svg>
-
 
 
           {/* Nodes */}
