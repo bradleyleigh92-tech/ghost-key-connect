@@ -221,7 +221,18 @@ export default function GlobalDominationMap() {
           <span>NODES: <span className="text-terminal-cyan">{activeNodes.size}</span>/{NODES.length}</span>
           <span>SECURED: <span className="text-terminal-green">{securedNodes.size}</span></span>
           <span>TUNNELS: <span className="text-terminal-yellow">{links.length}</span></span>
+          <span className="flex items-center gap-2">
+            INJECT:
+            <span className="relative inline-block h-1.5 w-32 overflow-hidden rounded bg-border">
+              <span
+                className="absolute inset-y-0 left-0 bg-terminal-green transition-all duration-500"
+                style={{ width: `${progress}%`, boxShadow: "0 0 6px var(--terminal-green)" }}
+              />
+            </span>
+            <span className="w-12 text-terminal-green tabular-nums">{progress.toFixed(2)}%</span>
+          </span>
         </div>
+
       </div>
 
       {/* Map area */}
