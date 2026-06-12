@@ -407,9 +407,9 @@ export default function GlobalDominationMap() {
 
         {/* Dashboard grid */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {/* Live terminal */}
-          <div className="lg:col-span-2 h-80">
-            <TerminalConsole />
+          {/* Interactive Kali shell */}
+          <div className="lg:col-span-2 h-96">
+            <InteractiveShell />
           </div>
 
           {/* Active sessions */}
@@ -489,9 +489,12 @@ export default function GlobalDominationMap() {
             </div>
           </div>
 
-          {/* Visitor geo intel — spans full width */}
-          <div className="lg:col-span-3">
-            <VisitorLocations />
+          {/* Admin-only geo intel link */}
+          <div className="lg:col-span-3 rounded-md border border-terminal-green/20 bg-terminal/60 p-3 font-mono text-[11px] text-muted-foreground">
+            visitor geolocation intel is restricted to administrators —{" "}
+            <a href="/admin" className="text-terminal-green underline underline-offset-2 hover:text-terminal-green/80">
+              open /admin console
+            </a>
           </div>
         </div>
 
