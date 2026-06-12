@@ -391,6 +391,34 @@ export default function GlobalDominationMap() {
           {/* Horizontal scan line */}
           <div className="pointer-events-none absolute inset-x-0 h-px bg-terminal-green/70 shadow-[0_0_12px_2px_oklch(0.65_0.18_145)] scan-y" />
 
+          {/* Operator workstation pin — placed in middle of North America */}
+          {(() => {
+            const op = project(39, -98);
+            return (
+              <div
+                className="absolute z-20 -translate-x-1/2 -translate-y-full"
+                style={{ left: `${op.x}%`, top: `${op.y}%` }}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="rounded border border-terminal-green/60 bg-background/85 px-2 py-1 font-mono shadow-[0_0_12px_oklch(0.65_0.18_145_/_0.5)] backdrop-blur">
+                    <div className="flex items-center gap-1.5">
+                      <svg viewBox="0 0 24 24" className="h-4 w-4 text-terminal-green" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="1.5" />
+                        <path d="M8 21h8M12 17v4" />
+                        <path d="M6 7l3 3-3 3M11 13h5" />
+                      </svg>
+                      <span className="text-[10px] uppercase tracking-wider text-terminal-green">kali.shell</span>
+                      <span className="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-terminal-green" />
+                    </div>
+                    <div className="mt-0.5 text-[10px] text-terminal-cyan tabular-nums">{operatorIp}</div>
+                  </div>
+                  <div className="mt-0.5 h-3 w-px bg-terminal-green/70" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-terminal-green shadow-[0_0_8px_var(--terminal-green)]" />
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Completion overlay */}
           {complete && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px] animate-fade-in">
