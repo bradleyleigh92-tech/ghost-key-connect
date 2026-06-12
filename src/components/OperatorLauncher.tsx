@@ -3,7 +3,7 @@ import { useState } from "react";
 const TARGET_IP = "192.168.109.128";
 
 interface Props {
-  onLaunch: () => void;
+  onLaunch: (ip: string) => void;
 }
 
 export default function OperatorLauncher({ onLaunch }: Props) {
@@ -21,7 +21,7 @@ export default function OperatorLauncher({ onLaunch }: Props) {
     setBusy(true);
     setTimeout(() => {
       if (trimmed === TARGET_IP) {
-        onLaunch();
+        onLaunch(trimmed);
       } else {
         setBusy(false);
         setError(`ERR: handshake refused — ${trimmed} is not a registered Kali operator`);
