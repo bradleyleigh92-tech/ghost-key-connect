@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import TerminalConsole from "./TerminalConsole";
+import InteractiveShell from "./InteractiveShell";
 import OperatorLauncher from "./OperatorLauncher";
-import VisitorLocations from "./VisitorLocations";
 
 
 
@@ -67,6 +66,7 @@ interface Link {
 
 export default function GlobalDominationMap() {
   const [launched, setLaunched] = useState(false);
+  const [operatorIp, setOperatorIp] = useState<string>("");
   const [activeNodes, setActiveNodes] = useState<Set<number>>(new Set());
   const [securedNodes, setSecuredNodes] = useState<Set<number>>(new Set());
   const [links, setLinks] = useState<Link[]>([]);
@@ -192,7 +192,7 @@ export default function GlobalDominationMap() {
   }, []);
 
   if (!launched) {
-    return <OperatorLauncher onLaunch={() => setLaunched(true)} />;
+    return <OperatorLauncher onLaunch={(ip) => { setOperatorIp(ip); setLaunched(true); }} />;
   }
 
   return (
