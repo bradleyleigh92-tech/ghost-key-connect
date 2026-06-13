@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const ADMIN_PASS = "phantom-admin";
+const ADMIN_PASS = "zuwep123";
 
 function AdminPage() {
   const [pass, setPass] = useState("");
@@ -61,9 +61,6 @@ function AdminPage() {
           >
             Unlock
           </button>
-          <div className="mt-3 border-t border-terminal-green/15 pt-2 text-[9px] text-muted-foreground">
-            hint: phantom-admin
-          </div>
         </div>
       </div>
     );
