@@ -16,11 +16,27 @@ const BOOT_LINES = [
   "Last login: Sat Jun 27 04:21:09 2026 from 10.10.14.7",
 ];
 
+type ConfigStep = "module" | "target" | "port" | "channel" | "interval" | "done";
+
+interface ConfigState {
+  step: ConfigStep;
+  values: Partial<Record<"module" | "target" | "port" | "channel" | "interval", string>>;
+}
+
+const CONFIG_PROMPTS: Record<Exclude<ConfigStep, "done">, { label: string; hint: string; def: string }> = {
+  module:   { label: "module",            hint: "e.g. recon / persistence / relay", def: "relay" },
+  target:   { label: "target host",       hint: "ip or hostname",                   def: "" },
+  port:     { label: "listening port",    hint: "1-65535",                          def: "4444" },
+  channel:  { label: "transport channel", hint: "tcp / tls / ws",                   def: "tls" },
+  interval: { label: "beacon interval",   hint: "seconds",                          def: "30" },
+};
+
 export default function PopupTerminal({ onClose, rhost = "target", lhost = "operator" }: Props) {
   const [lines, setLines] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [hIdx, setHIdx] = useState(-1);
+  const [config, setConfig] = useState<ConfigState | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const cwd = "/root";
@@ -38,20 +54,94 @@ export default function PopupTerminal({ onClose, rhost = "target", lhost = "oper
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ block: "end" }); }, [lines]);
 
+  const startConfig = () => {
+    setConfig({ step: "module", values: {} });
+    setLines((p) => [
+      ...p,
+      "[*] launching configuration wizard ...",
+      "[*] type 'cancel' at any prompt to abort.",
+    ]);
+  };
+
+  const advanceConfig = (raw: string) => {
+    if (!config) return;
+    const val = raw.trim();
+    if (val.toLowerCase() === "cancel") {
+      setLines((p) => [...p, "[!] configuration cancelled."]);
+      setConfig(null);
+      return;
+    }
+    const step = config.step as Exclude<ConfigStep, "done">;
+    const meta = CONFIG_PROMPTS[step];
+    const chosen = val || meta.def;
+    if (!chosen) {
+      setLines((p) => [...p, `[!] ${meta.label} is required.`]);
+      return;
+    }
+    const nextValues = { ...config.values, [step]: chosen };
+    const order: ConfigStep[] = ["module", "target", "port", "channel", "interval", "done"];
+    const nextStep = order[order.indexOf(step) + 1];
+    setLines((p) => [...p, `    ${meta.label} => ${chosen}`]);
+    if (nextStep === "done") {
+      const id = Math.random().toString(16).slice(2, 10).toUpperCase();
+      const ts = new Date().toISOString();
+      setLines((p) => [
+        ...p,
+        "",
+        "[*] generating configuration ...",
+        "┌──────────────── CONFIGURATION ────────────────┐",
+        `│ profile_id   : cfg-${id}`,
+        `│ module       : ${nextValues.module}`,
+        `│ target       : ${nextValues.target}`,
+        `│ port         : ${nextValues.port}`,
+        `│ channel      : ${nextValues.channel}`,
+        `│ interval     : ${nextValues.interval}s`,
+        `│ operator     : ${lhost}`,
+        `│ remote       : ${rhost}`,
+        `│ generated_at : ${ts}`,
+        "└───────────────────────────────────────────────┘",
+        "[+] configuration written to /root/.spm/profile.cfg",
+        "[+] ready. invoke 'start spm' to load this profile.",
+      ]);
+      setConfig(null);
+    } else {
+      setConfig({ step: nextStep, values: nextValues });
+    }
+  };
+
+  const runStartSpm = () => {
+    const seq = [
+      "[*] spm :: secure profile manager v2.4.1",
+      "[*] loading /root/.spm/profile.cfg ...",
+      "[*] verifying signature ...",
+      "[+] signature OK",
+      "[*] negotiating relay handshake ...",
+      "[*] binding listener ...",
+      "[+] spm runtime online — awaiting tasks.",
+    ];
+    seq.forEach((line, i) => {
+      setTimeout(() => setLines((p) => [...p, line]), 220 * (i + 1));
+    });
+  };
+
   const run = (raw: string) => {
     const trimmed = raw.trim();
     setLines((p) => [...p, `root@${rhost}:${cwd}# ${raw}`]);
     if (!trimmed) return;
-    if (trimmed) setHistory((h) => [...h, trimmed]);
+    setHistory((h) => [...h, trimmed]);
+
+    if (trimmed === "start spm") { runStartSpm(); return; }
 
     const [bin, ...args] = trimmed.split(/\s+/);
     const arg = args.join(" ");
     const out: string[] = [];
     switch (bin) {
       case "help":
-        out.push("commands: ls, pwd, whoami, id, uname, ifconfig, ps, cat, echo, date, history, clear, exit");
+        out.push("commands: ls, pwd, whoami, id, uname, ifconfig, ps, cat, echo, date,");
+        out.push("          configure, start spm, history, clear, exit");
         break;
-      case "ls": out.push("Desktop  Documents  Downloads  loot  notes.md  sessions.db"); break;
+      case "configure": startConfig(); return;
+      case "ls": out.push("Desktop  Documents  Downloads  loot  notes.md  profile.cfg  sessions.db"); break;
       case "pwd": out.push(cwd); break;
       case "whoami": out.push("root"); break;
       case "id": out.push("uid=0(root) gid=0(root) groups=0(root)"); break;
@@ -114,24 +204,38 @@ export default function PopupTerminal({ onClose, rhost = "target", lhost = "oper
           onClick={() => inputRef.current?.focus()}
         >
           <div className="text-terminal-cyan">░ R E M O T E   S E S S I O N   1 ░</div>
-          <div className="mb-2 text-muted-foreground">Connected to {rhost} via meterpreter — type 'help' or 'exit'.</div>
+          <div className="mb-2 text-muted-foreground">Connected to {rhost} via meterpreter — type 'help', 'configure', or 'exit'.</div>
           {lines.map((l, i) => {
             const color = l.startsWith("root@") ? "text-foreground/90"
               : l.startsWith("[+]") ? "text-terminal-green"
               : l.startsWith("[*]") ? "text-terminal-yellow"
-              : l.startsWith("bash:") || l.startsWith("cat:") ? "text-terminal-red"
+              : l.startsWith("[!]") || l.startsWith("bash:") || l.startsWith("cat:") ? "text-terminal-red"
+              : l.startsWith("┌") || l.startsWith("│") || l.startsWith("└") ? "text-terminal-cyan"
               : "text-muted-foreground";
             return <div key={i} className={`whitespace-pre-wrap break-all ${color}`}>{l}</div>;
           })}
+          {config && (() => {
+            const meta = CONFIG_PROMPTS[config.step as Exclude<ConfigStep, "done">];
+            return (
+              <div className="mt-1 text-[11px] text-terminal-cyan/80">
+                ? {meta.label} <span className="text-muted-foreground">({meta.hint}{meta.def ? `, default: ${meta.def}` : ""})</span>
+              </div>
+            );
+          })()}
           <div className="mt-1 flex items-center gap-1.5">
-            <span className="text-terminal-cyan">root@{rhost}</span>
-            <span className="text-muted-foreground">:{cwd}#</span>
+            <span className="text-terminal-cyan">{config ? "spm-cfg" : `root@${rhost}`}</span>
+            <span className="text-muted-foreground">{config ? " >" : `:${cwd}#`}</span>
             <input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") { e.preventDefault(); run(input); setInput(""); setHIdx(-1); }
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (config) { setLines((p) => [...p, `spm-cfg > ${input}`]); advanceConfig(input); }
+                  else { run(input); }
+                  setInput(""); setHIdx(-1);
+                }
                 else if (e.key === "ArrowUp") {
                   e.preventDefault();
                   if (!history.length) return;
