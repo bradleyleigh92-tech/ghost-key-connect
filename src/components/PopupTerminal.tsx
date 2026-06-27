@@ -54,20 +54,94 @@ export default function PopupTerminal({ onClose, rhost = "target", lhost = "oper
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ block: "end" }); }, [lines]);
 
+  const startConfig = () => {
+    setConfig({ step: "module", values: {} });
+    setLines((p) => [
+      ...p,
+      "[*] launching configuration wizard ...",
+      "[*] type 'cancel' at any prompt to abort.",
+    ]);
+  };
+
+  const advanceConfig = (raw: string) => {
+    if (!config) return;
+    const val = raw.trim();
+    if (val.toLowerCase() === "cancel") {
+      setLines((p) => [...p, "[!] configuration cancelled."]);
+      setConfig(null);
+      return;
+    }
+    const step = config.step as Exclude<ConfigStep, "done">;
+    const meta = CONFIG_PROMPTS[step];
+    const chosen = val || meta.def;
+    if (!chosen) {
+      setLines((p) => [...p, `[!] ${meta.label} is required.`]);
+      return;
+    }
+    const nextValues = { ...config.values, [step]: chosen };
+    const order: ConfigStep[] = ["module", "target", "port", "channel", "interval", "done"];
+    const nextStep = order[order.indexOf(step) + 1];
+    setLines((p) => [...p, `    ${meta.label} => ${chosen}`]);
+    if (nextStep === "done") {
+      const id = Math.random().toString(16).slice(2, 10).toUpperCase();
+      const ts = new Date().toISOString();
+      setLines((p) => [
+        ...p,
+        "",
+        "[*] generating configuration ...",
+        "┌──────────────── CONFIGURATION ────────────────┐",
+        `│ profile_id   : cfg-${id}`,
+        `│ module       : ${nextValues.module}`,
+        `│ target       : ${nextValues.target}`,
+        `│ port         : ${nextValues.port}`,
+        `│ channel      : ${nextValues.channel}`,
+        `│ interval     : ${nextValues.interval}s`,
+        `│ operator     : ${lhost}`,
+        `│ remote       : ${rhost}`,
+        `│ generated_at : ${ts}`,
+        "└───────────────────────────────────────────────┘",
+        "[+] configuration written to /root/.spm/profile.cfg",
+        "[+] ready. invoke 'start spm' to load this profile.",
+      ]);
+      setConfig(null);
+    } else {
+      setConfig({ step: nextStep, values: nextValues });
+    }
+  };
+
+  const runStartSpm = () => {
+    const seq = [
+      "[*] spm :: secure profile manager v2.4.1",
+      "[*] loading /root/.spm/profile.cfg ...",
+      "[*] verifying signature ...",
+      "[+] signature OK",
+      "[*] negotiating relay handshake ...",
+      "[*] binding listener ...",
+      "[+] spm runtime online — awaiting tasks.",
+    ];
+    seq.forEach((line, i) => {
+      setTimeout(() => setLines((p) => [...p, line]), 220 * (i + 1));
+    });
+  };
+
   const run = (raw: string) => {
     const trimmed = raw.trim();
     setLines((p) => [...p, `root@${rhost}:${cwd}# ${raw}`]);
     if (!trimmed) return;
-    if (trimmed) setHistory((h) => [...h, trimmed]);
+    setHistory((h) => [...h, trimmed]);
+
+    if (trimmed === "start spm") { runStartSpm(); return; }
 
     const [bin, ...args] = trimmed.split(/\s+/);
     const arg = args.join(" ");
     const out: string[] = [];
     switch (bin) {
       case "help":
-        out.push("commands: ls, pwd, whoami, id, uname, ifconfig, ps, cat, echo, date, history, clear, exit");
+        out.push("commands: ls, pwd, whoami, id, uname, ifconfig, ps, cat, echo, date,");
+        out.push("          configure, start spm, history, clear, exit");
         break;
-      case "ls": out.push("Desktop  Documents  Downloads  loot  notes.md  sessions.db"); break;
+      case "configure": startConfig(); return;
+      case "ls": out.push("Desktop  Documents  Downloads  loot  notes.md  profile.cfg  sessions.db"); break;
       case "pwd": out.push(cwd); break;
       case "whoami": out.push("root"); break;
       case "id": out.push("uid=0(root) gid=0(root) groups=0(root)"); break;
