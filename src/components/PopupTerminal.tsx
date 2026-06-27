@@ -16,11 +16,27 @@ const BOOT_LINES = [
   "Last login: Sat Jun 27 04:21:09 2026 from 10.10.14.7",
 ];
 
+type ConfigStep = "module" | "target" | "port" | "channel" | "interval" | "done";
+
+interface ConfigState {
+  step: ConfigStep;
+  values: Partial<Record<"module" | "target" | "port" | "channel" | "interval", string>>;
+}
+
+const CONFIG_PROMPTS: Record<Exclude<ConfigStep, "done">, { label: string; hint: string; def: string }> = {
+  module:   { label: "module",            hint: "e.g. recon / persistence / relay", def: "relay" },
+  target:   { label: "target host",       hint: "ip or hostname",                   def: "" },
+  port:     { label: "listening port",    hint: "1-65535",                          def: "4444" },
+  channel:  { label: "transport channel", hint: "tcp / tls / ws",                   def: "tls" },
+  interval: { label: "beacon interval",   hint: "seconds",                          def: "30" },
+};
+
 export default function PopupTerminal({ onClose, rhost = "target", lhost = "operator" }: Props) {
   const [lines, setLines] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [hIdx, setHIdx] = useState(-1);
+  const [config, setConfig] = useState<ConfigState | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const cwd = "/root";
