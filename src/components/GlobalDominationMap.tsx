@@ -106,6 +106,7 @@ export default function GlobalDominationMap() {
   const [glitch, setGlitch] = useState(false);
   const [complete, setComplete] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [popupOpen, setPopupOpen] = useState(false);
   const linkId = useRef(0);
   const logIdx = useRef(0);
   const logBottomRef = useRef<HTMLDivElement>(null);
