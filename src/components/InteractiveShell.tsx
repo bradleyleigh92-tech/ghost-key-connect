@@ -77,7 +77,7 @@ function basicCommand(bin: string, args: string[], arg: string): Line[] | null {
   }
 }
 
-export default function InteractiveShell() {
+export default function InteractiveShell({ onSessionOpen }: { onSessionOpen?: () => void } = {}) {
   const [lines, setLines] = useState<Line[]>([
     ...mk("░ K A L I   O P E R A T O R   S H E L L ░", "ok"),
     ...mk("Kali GNU/Linux Rolling — type 'help'  ·  enter 'exploit' to launch payload chain"),
@@ -134,6 +134,7 @@ export default function InteractiveShell() {
       ...mk(`[+] Meterpreter session 1 opened (${lhost}:${lport} -> ${rhost}:51422)`, "ok"),
     ]);
     setMode({ kind: "meterpreter" });
+    onSessionOpen?.();
   };
 
   const submit = () => {
