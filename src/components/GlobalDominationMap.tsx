@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import InteractiveShell from "./InteractiveShell";
 import OperatorLauncher from "./OperatorLauncher";
+import PopupTerminal from "./PopupTerminal";
 
 
 
