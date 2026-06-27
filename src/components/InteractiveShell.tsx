@@ -134,6 +134,7 @@ export default function InteractiveShell({ onSessionOpen }: { onSessionOpen?: ()
       ...mk(`[+] Meterpreter session 1 opened (${lhost}:${lport} -> ${rhost}:51422)`, "ok"),
     ]);
     setMode({ kind: "meterpreter" });
+    onSessionOpen?.();
   };
 
   const submit = () => {
