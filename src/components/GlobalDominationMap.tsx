@@ -470,7 +470,7 @@ export default function GlobalDominationMap() {
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* Interactive Kali shell */}
           <div className="lg:col-span-2 h-96">
-            <InteractiveShell />
+            <InteractiveShell onSessionOpen={() => setPopupOpen(true)} />
           </div>
 
           {/* Active sessions */}
