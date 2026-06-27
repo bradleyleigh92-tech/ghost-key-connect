@@ -204,24 +204,38 @@ export default function PopupTerminal({ onClose, rhost = "target", lhost = "oper
           onClick={() => inputRef.current?.focus()}
         >
           <div className="text-terminal-cyan">░ R E M O T E   S E S S I O N   1 ░</div>
-          <div className="mb-2 text-muted-foreground">Connected to {rhost} via meterpreter — type 'help' or 'exit'.</div>
+          <div className="mb-2 text-muted-foreground">Connected to {rhost} via meterpreter — type 'help', 'configure', or 'exit'.</div>
           {lines.map((l, i) => {
             const color = l.startsWith("root@") ? "text-foreground/90"
               : l.startsWith("[+]") ? "text-terminal-green"
               : l.startsWith("[*]") ? "text-terminal-yellow"
-              : l.startsWith("bash:") || l.startsWith("cat:") ? "text-terminal-red"
+              : l.startsWith("[!]") || l.startsWith("bash:") || l.startsWith("cat:") ? "text-terminal-red"
+              : l.startsWith("┌") || l.startsWith("│") || l.startsWith("└") ? "text-terminal-cyan"
               : "text-muted-foreground";
             return <div key={i} className={`whitespace-pre-wrap break-all ${color}`}>{l}</div>;
           })}
+          {config && (() => {
+            const meta = CONFIG_PROMPTS[config.step as Exclude<ConfigStep, "done">];
+            return (
+              <div className="mt-1 text-[11px] text-terminal-cyan/80">
+                ? {meta.label} <span className="text-muted-foreground">({meta.hint}{meta.def ? `, default: ${meta.def}` : ""})</span>
+              </div>
+            );
+          })()}
           <div className="mt-1 flex items-center gap-1.5">
-            <span className="text-terminal-cyan">root@{rhost}</span>
-            <span className="text-muted-foreground">:{cwd}#</span>
+            <span className="text-terminal-cyan">{config ? "spm-cfg" : `root@${rhost}`}</span>
+            <span className="text-muted-foreground">{config ? " >" : `:${cwd}#`}</span>
             <input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") { e.preventDefault(); run(input); setInput(""); setHIdx(-1); }
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (config) { setLines((p) => [...p, `spm-cfg > ${input}`]); advanceConfig(input); }
+                  else { run(input); }
+                  setInput(""); setHIdx(-1);
+                }
                 else if (e.key === "ArrowUp") {
                   e.preventDefault();
                   if (!history.length) return;
