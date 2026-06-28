@@ -249,9 +249,14 @@ function Index() {
               </div>
               <button
                 onClick={handleConnect}
-                className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background font-mono"
+                disabled={!vpsAddress.trim() || !username.trim() || !privateKey.trim()}
+                className={`w-full rounded-md border px-4 py-2.5 text-sm font-semibold font-mono transition-all duration-300 ${
+                  !vpsAddress.trim() || !username.trim() || !privateKey.trim()
+                    ? "bg-muted/40 text-muted-foreground border-border btn-glow-idle cursor-not-allowed"
+                    : "bg-terminal-green/20 text-terminal-green border-terminal-green/60 btn-glow-ready hover:bg-terminal-green/30"
+                }`}
               >
-                Connect
+                {vpsAddress.trim() && username.trim() && privateKey.trim() ? "Connect »" : "Awaiting credentials..."}
               </button>
             </>
           )}
