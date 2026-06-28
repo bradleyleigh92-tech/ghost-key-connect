@@ -269,6 +269,18 @@ function Index() {
                   {phaseLabels[phase] ?? phaseLabels[2]}
                 </p>
               </div>
+              <button
+                disabled
+                className={`w-full rounded-md border px-4 py-2.5 text-sm font-semibold font-mono transition-all duration-300 cursor-not-allowed ${
+                  phase === 0
+                    ? "bg-terminal-yellow/15 text-terminal-yellow border-terminal-yellow/60 btn-glow-init"
+                    : phase === 1
+                    ? "bg-terminal-cyan/15 text-terminal-cyan border-terminal-cyan/60 btn-glow-verify"
+                    : "bg-terminal-green/15 text-terminal-green border-terminal-green/60 btn-glow-contact"
+                }`}
+              >
+                {phaseLabels[phase] ?? "Contacting server..."}
+              </button>
               <div className="w-full space-y-1.5">
                 {phaseLabels.map((label, idx) => (
                   <div
