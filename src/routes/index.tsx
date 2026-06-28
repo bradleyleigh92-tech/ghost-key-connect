@@ -249,9 +249,14 @@ function Index() {
               </div>
               <button
                 onClick={handleConnect}
-                className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background font-mono"
+                disabled={!vpsAddress.trim() || !username.trim() || !privateKey.trim()}
+                className={`w-full rounded-md border px-4 py-2.5 text-sm font-semibold font-mono transition-all duration-300 ${
+                  !vpsAddress.trim() || !username.trim() || !privateKey.trim()
+                    ? "bg-muted/40 text-muted-foreground border-border btn-glow-idle cursor-not-allowed"
+                    : "bg-terminal-green/20 text-terminal-green border-terminal-green/60 btn-glow-ready hover:bg-terminal-green/30"
+                }`}
               >
-                Connect
+                {vpsAddress.trim() && username.trim() && privateKey.trim() ? "Connect »" : "Awaiting credentials..."}
               </button>
             </>
           )}
@@ -264,6 +269,18 @@ function Index() {
                   {phaseLabels[phase] ?? phaseLabels[2]}
                 </p>
               </div>
+              <button
+                disabled
+                className={`w-full rounded-md border px-4 py-2.5 text-sm font-semibold font-mono transition-all duration-300 cursor-not-allowed ${
+                  phase === 0
+                    ? "bg-terminal-yellow/15 text-terminal-yellow border-terminal-yellow/60 btn-glow-init"
+                    : phase === 1
+                    ? "bg-terminal-cyan/15 text-terminal-cyan border-terminal-cyan/60 btn-glow-verify"
+                    : "bg-terminal-green/15 text-terminal-green border-terminal-green/60 btn-glow-contact"
+                }`}
+              >
+                {phaseLabels[phase] ?? "Contacting server..."}
+              </button>
               <div className="w-full space-y-1.5">
                 {phaseLabels.map((label, idx) => (
                   <div
@@ -331,7 +348,7 @@ function Index() {
 
               <button
                 onClick={handleReset}
-                className="w-full rounded-md border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring font-mono"
+                className="w-full rounded-md border border-terminal-red/60 bg-terminal-red/10 px-4 py-2.5 text-sm font-semibold text-terminal-red transition-all duration-300 hover:bg-terminal-red/20 btn-glow-fail font-mono"
               >
                 Try Again
               </button>
