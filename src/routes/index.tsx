@@ -214,7 +214,7 @@ function Index() {
                   <input
                     id="vps"
                     type="text"
-                    placeholder="192.168.1.100 or vps.example.com"
+                    placeholder="10.0.0.94"
                     value={vpsAddress}
                     onChange={(e) => setVpsAddress(e.target.value)}
                     className="w-full rounded-md border border-input bg-panel px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring font-mono"

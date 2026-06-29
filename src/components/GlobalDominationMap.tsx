@@ -563,7 +563,7 @@ export default function GlobalDominationMap() {
       {popupOpen && (
         <PopupTerminal
           onClose={() => setPopupOpen(false)}
-          rhost={operatorIp || "192.168.109.128"}
+          rhost={operatorIp || "10.0.0.94"}
           lhost="10.10.14.7"
         />
       )}
