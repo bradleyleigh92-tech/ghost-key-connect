@@ -46,7 +46,7 @@ function basicCommand(bin: string, args: string[], arg: string): Line[] | null {
     case "ip":
       return mk(
         "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n" +
-        "        inet 192.168.109.128  netmask 255.255.255.0  broadcast 192.168.109.255\n" +
+        "        inet 10.0.0.94  netmask 255.255.255.0  broadcast 10.0.0.255\n" +
         "        ether 00:0c:29:5b:11:e2  txqueuelen 1000  (Ethernet)\n" +
         "tun0:   inet 10.10.14.7  netmask 255.255.254.0  mtu 1420",
       );
@@ -115,7 +115,7 @@ export default function InteractiveShell({ onSessionOpen }: { onSessionOpen?: ()
       return;
     }
     if (!opts.RHOST) {
-      append(mk("[?] RHOST not set — enter target IP (e.g. 192.168.109.128):", "ask"));
+      append(mk("[?] RHOST not set — enter target IP (e.g. 10.0.0.94):", "ask"));
       setMode({ kind: "ask_rhost", payload: p, lhost: opts.LHOST });
       return;
     }
