@@ -20,7 +20,7 @@ const LOG_MESSAGES: string[] = [
   "[SEC] TLS handshake cipher: ECDHE-RSA-AES256-GCM-SHA384",
   "[NET] Resolving hostname via DNS-over-HTTPS...",
   "[SEC] Certificate chain validated: CN=vps.remote-admin.net",
-  "[NET] TCP SYN sent → 203.0.113.42:22",
+  "[NET] TCP SYN sent → 10.0.0.94:22",
   "[NET] TCP SYN-ACK received — RTT 142ms",
   "[SSH] Protocol version exchange: SSH-2.0-OpenSSH_9.3",
   "[SEC] Host key fingerprint: SHA256:aBcD1eFgH2iJkL3mNoP4qRsT5uVwX6yZ",
@@ -164,7 +164,7 @@ function Index() {
         setPhase(0);
         addLog("[ERR] Connection terminated unexpectedly");
         addLog("[NET] Ping timeout — no response from host");
-        addLog("[SSH] ssh: connect to host 203.0.113.42 port 22: Connection refused");
+        addLog("[SSH] ssh: connect to host 10.0.0.94 port 22: Connection refused");
       }
     }, delay);
   }, [clearTimers, addLog, username]);
