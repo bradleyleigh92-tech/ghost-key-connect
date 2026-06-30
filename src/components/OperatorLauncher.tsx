@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TARGET_IP = "10.0.0.94";
+const TARGET_IP = "10.0.0.154";
 
 interface Props {
   onLaunch: (ip: string) => void;

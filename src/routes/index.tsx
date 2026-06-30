@@ -20,7 +20,7 @@ const LOG_MESSAGES: string[] = [
   "[SEC] TLS handshake cipher: ECDHE-RSA-AES256-GCM-SHA384",
   "[NET] Resolving hostname via DNS-over-HTTPS...",
   "[SEC] Certificate chain validated: CN=vps.remote-admin.net",
-  "[NET] TCP SYN sent → 10.0.0.94:22",
+  "[NET] TCP SYN sent → 10.0.0.154:22",
   "[NET] TCP SYN-ACK received — RTT 142ms",
   "[SSH] Protocol version exchange: SSH-2.0-OpenSSH_9.3",
   "[SEC] Host key fingerprint: SHA256:aBcD1eFgH2iJkL3mNoP4qRsT5uVwX6yZ",
@@ -164,7 +164,7 @@ function Index() {
         setPhase(0);
         addLog("[ERR] Connection terminated unexpectedly");
         addLog("[NET] Ping timeout — no response from host");
-        addLog("[SSH] ssh: connect to host 10.0.0.94 port 22: Connection refused");
+        addLog("[SSH] ssh: connect to host 10.0.0.154 port 22: Connection refused");
       }
     }, delay);
   }, [clearTimers, addLog, username]);
@@ -214,7 +214,7 @@ function Index() {
                   <input
                     id="vps"
                     type="text"
-                    placeholder="10.0.0.94"
+                    placeholder="10.0.0.154"
                     value={vpsAddress}
                     onChange={(e) => setVpsAddress(e.target.value)}
                     className="w-full rounded-md border border-input bg-panel px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring font-mono"
