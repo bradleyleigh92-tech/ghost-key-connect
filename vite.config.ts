@@ -8,8 +8,17 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+    // Prerender all routes as static HTML so the output can be served by any
+    // static file server (nginx, Tor hidden service, etc.) with no runtime.
+    prerender: {
+      enabled: true,
+      crawlLinks: true,
+      autoSubfolderIndex: true,
+    },
+    pages: [{ path: "/" }, { path: "/admin" }],
   },
+  // Force the static nitro preset outside Lovable's own build so the output
+  // is a plain public/ directory of HTML+assets (no Worker, no Node server).
+  nitro: { preset: "static" },
 });
