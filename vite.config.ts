@@ -8,7 +8,6 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    server: { entry: "server" },
     // Prerender all routes as static HTML so the output can be served by any
     // static file server (nginx, Tor hidden service, etc.) with no runtime.
     prerender: {
