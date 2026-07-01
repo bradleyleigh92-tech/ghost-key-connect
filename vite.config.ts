@@ -18,13 +18,6 @@ export default defineConfig({
               assetFileNames: "assets/[name]-[hash][extname]",
             },
           },
-          rolldownOptions: {
-            output: {
-              entryFileNames: "[name].js",
-              chunkFileNames: "_chunks/[name]-[hash].js",
-              assetFileNames: "assets/[name]-[hash][extname]",
-            },
-          },
         },
       },
     },
