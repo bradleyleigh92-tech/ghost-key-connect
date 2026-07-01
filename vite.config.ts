@@ -5,22 +5,30 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { existsSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+function tanstackPrerenderServerBridge() {
+  return {
+    name: "tanstack-prerender-server-bridge",
+    closeBundle() {
+      const serverEntry = resolve("dist/server/index.mjs");
+      const prerenderEntry = resolve("dist/server/server.js");
+
+      if (existsSync(serverEntry) && !existsSync(prerenderEntry)) {
+        writeFileSync(
+          prerenderEntry,
+          'export { default } from "./index.mjs";\n',
+          "utf8",
+        );
+      }
+    },
+  };
+}
 
 export default defineConfig({
   vite: {
-    environments: {
-      ssr: {
-        build: {
-          rollupOptions: {
-            output: {
-              entryFileNames: "[name].js",
-              chunkFileNames: "_chunks/[name]-[hash].js",
-              assetFileNames: "assets/[name]-[hash][extname]",
-            },
-          },
-        },
-      },
-    },
+    plugins: [tanstackPrerenderServerBridge()],
   },
   tanstackStart: {
     // Prerender all routes as static HTML so the output can be served by any
