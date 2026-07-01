@@ -26,8 +26,12 @@ function loadVisits(): Visit[] {
 }
 
 export default function VisitorLocations() {
-  const [visits, setVisits] = useState<Visit[]>(() => loadVisits());
+  const [visits, setVisits] = useState<Visit[]>([]);
   const [status, setStatus] = useState<"idle" | "fetching" | "ok" | "err">("idle");
+
+  useEffect(() => {
+    setVisits(loadVisits());
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
