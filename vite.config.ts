@@ -7,6 +7,28 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    environments: {
+      ssr: {
+        build: {
+          rollupOptions: {
+            output: {
+              entryFileNames: "[name].js",
+              chunkFileNames: "_chunks/[name]-[hash].js",
+              assetFileNames: "assets/[name]-[hash][extname]",
+            },
+          },
+          rolldownOptions: {
+            output: {
+              entryFileNames: "[name].js",
+              chunkFileNames: "_chunks/[name]-[hash].js",
+              assetFileNames: "assets/[name]-[hash][extname]",
+            },
+          },
+        },
+      },
+    },
+  },
   tanstackStart: {
     // Prerender all routes as static HTML so the output can be served by any
     // static file server (nginx, Tor hidden service, etc.) with no runtime.
