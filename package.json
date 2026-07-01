@@ -9,7 +9,9 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "serve": "npx --yes serve -s .output/public -l tcp://0.0.0.0:${PORT:-3000} --no-clipboard",
+    "go": "npm run build && npm run serve"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
