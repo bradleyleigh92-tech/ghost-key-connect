@@ -15,10 +15,19 @@ function tanstackPrerenderServerBridge() {
       const serverEntry = resolve("dist/server/index.mjs");
       const prerenderEntry = resolve("dist/server/server.js");
 
-      if (existsSync(serverEntry) && !existsSync(prerenderEntry)) {
+      if (existsSync(serverEntry)) {
         writeFileSync(
           prerenderEntry,
-          'export { default } from "./index.mjs";\n',
+          [
+            'import server from "./index.mjs";',
+            "",
+            "export default {",
+            "  fetch(request, env = {}, ctx) {",
+            "    return server.fetch(request, env, ctx);",
+            "  },",
+            "};",
+            "",
+          ].join("\n"),
           "utf8",
         );
       }
