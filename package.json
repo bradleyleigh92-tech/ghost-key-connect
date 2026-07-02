@@ -10,8 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "serve": "npx --yes serve -s dist/client -l tcp://0.0.0.0:${PORT:-3000} --no-clipboard",
-    "go": "npm run build && npm run serve"
+    "serve": "node server.mjs",
+    "go": "npm run build && rm -rf .output dist/server && npm run serve"
+
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
