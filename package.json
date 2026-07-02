@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "serve": "node static-server.mjs",
-    "go": "npm run build && rm -rf .output dist/server && npm run serve"
+    "go": "npm run build && npm run serve"
 
   },
   "dependencies": {
