@@ -4,12 +4,7 @@ import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 
-import { existsSync } from "node:fs";
-const ROOT = existsSync(resolve(".output/public"))
-  ? resolve(".output/public")
-  : existsSync(resolve("dist/client"))
-    ? resolve("dist/client")
-    : resolve("dist");
+const ROOT = resolve("dist/client");
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
 
