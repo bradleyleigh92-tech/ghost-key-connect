@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "serve": "node server.mjs",
+    "serve": "node static-server.mjs",
     "go": "npm run build && rm -rf .output dist/server && npm run serve"
 
   },
