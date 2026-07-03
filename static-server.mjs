@@ -1,10 +1,10 @@
 // Tiny static SPA server. Ignores Host header (works for localhost, .onion, etc.).
-// Serves files from dist/client and falls back to index.html for unknown paths.
+// Serves files from dist and falls back to index.html for unknown paths.
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 
-const ROOT = resolve("dist/client");
+const ROOT = resolve("dist");
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
 
