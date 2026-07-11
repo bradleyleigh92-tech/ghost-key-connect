@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TARGET_IP = "10.0.0.154";
+const TARGET_IP = "192.168.109.128";
 
 interface Props {
   onLaunch: (ip: string) => void;
@@ -86,7 +86,7 @@ export default function OperatorLauncher({ onLaunch }: Props) {
                 value={ip}
                 onChange={(e) => setIp(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleStart()}
-                placeholder="10.0.0.x"
+                placeholder="192.168.x.x"
                 disabled={busy}
                 className="flex-1 rounded-md border border-input bg-background/60 px-3 py-2 text-sm text-terminal-green placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-terminal-green"
               />
