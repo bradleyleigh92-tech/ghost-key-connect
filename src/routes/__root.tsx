@@ -4,12 +4,9 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 
-import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -77,45 +74,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "A dark-themed web application simulating remote server administration and connection attempts." },
+      { title: "Remote Administration Client" },
+      { name: "description", content: "Static cybersecurity-themed remote administration interface simulation." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "A dark-themed web application simulating remote server administration and connection attempts." },
+      { property: "og:title", content: "Remote Administration Client" },
+      { property: "og:description", content: "Static cybersecurity-themed remote administration interface simulation." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "A dark-themed web application simulating remote server administration and connection attempts." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a3635f79-be5f-41cf-8d81-700eb943bc87/id-preview-ff2f91d7--fac7595b-0e26-4778-80f1-9217ab09d20d.lovable.app-1780828475468.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a3635f79-be5f-41cf-8d81-700eb943bc87/id-preview-ff2f91d7--fac7595b-0e26-4778-80f1-9217ab09d20d.lovable.app-1780828475468.png" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { name: "twitter:title", content: "Remote Administration Client" },
+      { name: "twitter:description", content: "Static cybersecurity-themed remote administration interface simulation." },
     ],
   }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
-function RootShell({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();

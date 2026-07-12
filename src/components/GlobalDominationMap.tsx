@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import InteractiveShell from "./InteractiveShell";
 import OperatorLauncher from "./OperatorLauncher";
+import PopupTerminal from "./PopupTerminal";
 
 
 
@@ -105,6 +106,7 @@ export default function GlobalDominationMap() {
   const [glitch, setGlitch] = useState(false);
   const [complete, setComplete] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [popupOpen, setPopupOpen] = useState(false);
   const linkId = useRef(0);
   const logIdx = useRef(0);
   const logBottomRef = useRef<HTMLDivElement>(null);
@@ -468,7 +470,7 @@ export default function GlobalDominationMap() {
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* Interactive Kali shell */}
           <div className="lg:col-span-2 h-96">
-            <InteractiveShell />
+            <InteractiveShell onSessionOpen={() => setPopupOpen(true)} />
           </div>
 
           {/* Active sessions */}
@@ -558,6 +560,13 @@ export default function GlobalDominationMap() {
         </div>
 
       </div>
+      {popupOpen && (
+        <PopupTerminal
+          onClose={() => setPopupOpen(false)}
+          rhost={operatorIp || "10.0.0.154"}
+          lhost="10.10.14.7"
+        />
+      )}
     </div>
   );
 }

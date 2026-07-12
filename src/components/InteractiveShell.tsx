@@ -46,7 +46,7 @@ function basicCommand(bin: string, args: string[], arg: string): Line[] | null {
     case "ip":
       return mk(
         "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n" +
-        "        inet 192.168.109.128  netmask 255.255.255.0  broadcast 192.168.109.255\n" +
+        "        inet 10.0.0.154  netmask 255.255.255.0  broadcast 10.0.0.255\n" +
         "        ether 00:0c:29:5b:11:e2  txqueuelen 1000  (Ethernet)\n" +
         "tun0:   inet 10.10.14.7  netmask 255.255.254.0  mtu 1420",
       );
@@ -77,7 +77,7 @@ function basicCommand(bin: string, args: string[], arg: string): Line[] | null {
   }
 }
 
-export default function InteractiveShell() {
+export default function InteractiveShell({ onSessionOpen }: { onSessionOpen?: () => void } = {}) {
   const [lines, setLines] = useState<Line[]>([
     ...mk("░ K A L I   O P E R A T O R   S H E L L ░", "ok"),
     ...mk("Kali GNU/Linux Rolling — type 'help'  ·  enter 'exploit' to launch payload chain"),
@@ -115,7 +115,7 @@ export default function InteractiveShell() {
       return;
     }
     if (!opts.RHOST) {
-      append(mk("[?] RHOST not set — enter target IP (e.g. 192.168.109.128):", "ask"));
+      append(mk("[?] RHOST not set — enter target IP (e.g. 10.0.0.154):", "ask"));
       setMode({ kind: "ask_rhost", payload: p, lhost: opts.LHOST });
       return;
     }
@@ -134,6 +134,7 @@ export default function InteractiveShell() {
       ...mk(`[+] Meterpreter session 1 opened (${lhost}:${lport} -> ${rhost}:51422)`, "ok"),
     ]);
     setMode({ kind: "meterpreter" });
+    onSessionOpen?.();
   };
 
   const submit = () => {

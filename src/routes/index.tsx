@@ -20,7 +20,7 @@ const LOG_MESSAGES: string[] = [
   "[SEC] TLS handshake cipher: ECDHE-RSA-AES256-GCM-SHA384",
   "[NET] Resolving hostname via DNS-over-HTTPS...",
   "[SEC] Certificate chain validated: CN=vps.remote-admin.net",
-  "[NET] TCP SYN sent → 203.0.113.42:22",
+  "[NET] TCP SYN sent → 10.0.0.154:22",
   "[NET] TCP SYN-ACK received — RTT 142ms",
   "[SSH] Protocol version exchange: SSH-2.0-OpenSSH_9.3",
   "[SEC] Host key fingerprint: SHA256:aBcD1eFgH2iJkL3mNoP4qRsT5uVwX6yZ",
@@ -164,7 +164,7 @@ function Index() {
         setPhase(0);
         addLog("[ERR] Connection terminated unexpectedly");
         addLog("[NET] Ping timeout — no response from host");
-        addLog("[SSH] ssh: connect to host 203.0.113.42 port 22: Connection refused");
+        addLog("[SSH] ssh: connect to host 10.0.0.154 port 22: Connection refused");
       }
     }, delay);
   }, [clearTimers, addLog, username]);
@@ -214,7 +214,7 @@ function Index() {
                   <input
                     id="vps"
                     type="text"
-                    placeholder="192.168.1.100 or vps.example.com"
+                    placeholder="10.0.0.154"
                     value={vpsAddress}
                     onChange={(e) => setVpsAddress(e.target.value)}
                     className="w-full rounded-md border border-input bg-panel px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring font-mono"
@@ -249,9 +249,14 @@ function Index() {
               </div>
               <button
                 onClick={handleConnect}
-                className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background font-mono"
+                disabled={!vpsAddress.trim() || !username.trim() || !privateKey.trim()}
+                className={`w-full rounded-md border px-4 py-2.5 text-sm font-semibold font-mono transition-all duration-300 ${
+                  !vpsAddress.trim() || !username.trim() || !privateKey.trim()
+                    ? "bg-muted/40 text-muted-foreground border-border btn-glow-idle cursor-not-allowed"
+                    : "bg-terminal-green/20 text-terminal-green border-terminal-green/60 btn-glow-ready hover:bg-terminal-green/30"
+                }`}
               >
-                Connect
+                {vpsAddress.trim() && username.trim() && privateKey.trim() ? "Connect »" : "Awaiting credentials..."}
               </button>
             </>
           )}
@@ -264,6 +269,18 @@ function Index() {
                   {phaseLabels[phase] ?? phaseLabels[2]}
                 </p>
               </div>
+              <button
+                disabled
+                className={`w-full rounded-md border px-4 py-2.5 text-sm font-semibold font-mono transition-all duration-300 cursor-not-allowed ${
+                  phase === 0
+                    ? "bg-terminal-yellow/15 text-terminal-yellow border-terminal-yellow/60 btn-glow-init"
+                    : phase === 1
+                    ? "bg-terminal-cyan/15 text-terminal-cyan border-terminal-cyan/60 btn-glow-verify"
+                    : "bg-terminal-green/15 text-terminal-green border-terminal-green/60 btn-glow-contact"
+                }`}
+              >
+                {phaseLabels[phase] ?? "Contacting server..."}
+              </button>
               <div className="w-full space-y-1.5">
                 {phaseLabels.map((label, idx) => (
                   <div
@@ -331,7 +348,7 @@ function Index() {
 
               <button
                 onClick={handleReset}
-                className="w-full rounded-md border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring font-mono"
+                className="w-full rounded-md border border-terminal-red/60 bg-terminal-red/10 px-4 py-2.5 text-sm font-semibold text-terminal-red transition-all duration-300 hover:bg-terminal-red/20 btn-glow-fail font-mono"
               >
                 Try Again
               </button>
