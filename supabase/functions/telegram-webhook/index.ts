@@ -26,6 +26,16 @@ function fmtRemaining(started_at: string, duration_sec: number, revoked: boolean
 }
 
 Deno.serve(async (req) => {
+  const url = new URL(req.url);
+  if (req.method === "GET" && url.searchParams.get("setup") === "1") {
+    const hook = `${SUPABASE_URL.replace(".supabase.co", ".supabase.co")}/functions/v1/telegram-webhook`;
+    const r = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: hook, allowed_updates: ["message"] }),
+    });
+    return new Response(await r.text(), { headers: { "Content-Type": "application/json" } });
+  }
   if (req.method !== "POST") return new Response("ok");
   const update = await req.json().catch(() => null);
   const msg = update?.message ?? update?.edited_message;
