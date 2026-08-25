@@ -279,6 +279,27 @@ export default function GlobalDominationMap() {
 
       </div>
 
+      {/* Ops session status bar (Telegram-controlled) */}
+      <div className="relative z-40 flex flex-wrap items-center justify-between gap-3 border-b border-terminal-cyan/30 bg-background/70 px-6 py-2 font-mono text-[11px] backdrop-blur">
+        <div className="flex items-center gap-3">
+          <span className="text-muted-foreground">FETCH</span>
+          <span className="text-terminal-cyan">
+            {ops.sessionId ? `#${ops.sessionId.slice(0, 8)}` : "provisioning…"}
+          </span>
+          <span className="text-muted-foreground">·</span>
+          <span className="text-muted-foreground">TIME LEFT</span>
+          <span className={`tabular-nums ${ops.remaining < 60 ? "text-terminal-red" : "text-terminal-green"}`}>
+            {formatRemaining(ops.remaining)}
+          </span>
+        </div>
+        {ops.injectedText && (
+          <div className="flex items-center gap-2 rounded border border-terminal-yellow/50 bg-terminal-yellow/10 px-2 py-1 text-terminal-yellow">
+            <span className="text-[9px] uppercase tracking-wider">// admin inject //</span>
+            <span className="max-w-[60vw] truncate">{ops.injectedText}</span>
+          </div>
+        )}
+      </div>
+
       {/* Map area */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-6">
         <div className="relative aspect-[2/1] w-full overflow-hidden rounded-lg border border-terminal-green/30 bg-terminal">
