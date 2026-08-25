@@ -14,7 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ops_admins: {
+        Row: {
+          chat_id: number
+          created_at: string
+          username: string | null
+        }
+        Insert: {
+          chat_id: number
+          created_at?: string
+          username?: string | null
+        }
+        Update: {
+          chat_id?: number
+          created_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      ops_sessions: {
+        Row: {
+          created_at: string
+          duration_sec: number
+          id: string
+          injected_at: string | null
+          injected_text: string | null
+          operator_ip: string
+          revoked: boolean
+          started_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_sec?: number
+          id?: string
+          injected_at?: string | null
+          injected_text?: string | null
+          operator_ip: string
+          revoked?: boolean
+          started_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_sec?: number
+          id?: string
+          injected_at?: string | null
+          injected_text?: string | null
+          operator_ip?: string
+          revoked?: boolean
+          started_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
