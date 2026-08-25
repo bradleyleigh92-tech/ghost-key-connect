@@ -225,11 +225,21 @@ export default function GlobalDominationMap() {
     return () => clearInterval(prune);
   }, []);
 
+  const ops = useOpsSession(launched ? operatorIp : null, launched, 900);
+
+  useEffect(() => {
+    if (ops.revoked && launched) {
+      setLaunched(false);
+      setOperatorIp("");
+    }
+  }, [ops.revoked, launched]);
+
   if (!launched) {
     return <OperatorLauncher onLaunch={(ip) => { setOperatorIp(ip); setLaunched(true); }} />;
   }
 
   return (
+
 
     <div className={`relative min-h-screen w-full overflow-hidden bg-background ${glitch ? "glitch-active" : ""}`}>
       {/* Scanlines */}
