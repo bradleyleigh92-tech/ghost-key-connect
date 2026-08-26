@@ -111,7 +111,7 @@ function Index() {
   const [vpsAddress, setVpsAddress] = useState("");
   const [username, setUsername] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-  const [status, setStatus] = useState<"idle" | "connecting" | "failed" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "connecting" | "failed" | "denied" | "success">("idle");
   const [phase, setPhase] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const logIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -173,11 +173,12 @@ function Index() {
         addLog("[SSH] Secure channel established");
         addLog("[SYS] Loading surveillance grid...");
       } else {
-        setStatus("failed");
+        setStatus("denied");
         setPhase(0);
-        addLog("[ERR] Connection terminated unexpectedly");
-        addLog("[NET] Ping timeout — no response from host");
-        addLog("[SSH] ssh: connect to host 10.0.0.154 port 22: Connection refused");
+        addLog("[AUTH] Offered publickey — fingerprint not in authorized_keys");
+        addLog("[SEC] Key signature rejected by remote host");
+        addLog("[ERR] ACCESS DENIED — permission denied (publickey)");
+        addLog("[SSH] Authentication failed after 1 attempt — session closed");
       }
     }, delay);
   }, [clearTimers, addLog, username]);
