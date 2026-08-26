@@ -111,7 +111,7 @@ function Index() {
   const [vpsAddress, setVpsAddress] = useState("");
   const [username, setUsername] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-  const [status, setStatus] = useState<"idle" | "connecting" | "failed" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "connecting" | "failed" | "denied" | "success">("idle");
   const [phase, setPhase] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const logIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -173,11 +173,12 @@ function Index() {
         addLog("[SSH] Secure channel established");
         addLog("[SYS] Loading surveillance grid...");
       } else {
-        setStatus("failed");
+        setStatus("denied");
         setPhase(0);
-        addLog("[ERR] Connection terminated unexpectedly");
-        addLog("[NET] Ping timeout — no response from host");
-        addLog("[SSH] ssh: connect to host 10.0.0.154 port 22: Connection refused");
+        addLog("[AUTH] Offered publickey — fingerprint not in authorized_keys");
+        addLog("[SEC] Key signature rejected by remote host");
+        addLog("[ERR] ACCESS DENIED — permission denied (publickey)");
+        addLog("[SSH] Authentication failed after 1 attempt — session closed");
       }
     }, delay);
   }, [clearTimers, addLog, username]);
@@ -308,6 +309,65 @@ function Index() {
                 ))}
               </div>
               <TerminalLog logs={logs} />
+            </div>
+          )}
+
+          {status === "denied" && (
+            <div className="space-y-5 py-2">
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-terminal-red/50 bg-terminal-red/10">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-terminal-red"
+                  >
+                    <rect width="18" height="11" x="3" y="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                  </svg>
+                </div>
+                <div className="text-center space-y-1">
+                  <h2 className="text-lg font-bold tracking-widest text-terminal-red uppercase">Access Denied</h2>
+                  <p className="text-sm font-mono text-muted-foreground">
+                    Reason: Unauthorized private key
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-md border border-terminal-red/30 bg-panel p-4 space-y-3">
+                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-mono">
+                  Authentication Report
+                </h3>
+                <ul className="space-y-2 text-sm font-mono">
+                  <li className="flex items-start gap-2 text-terminal-red">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-terminal-red" />
+                    Key fingerprint not in authorized_keys
+                  </li>
+                  <li className="flex items-start gap-2 text-terminal-red">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-terminal-red" />
+                    Permission denied (publickey)
+                  </li>
+                  <li className="flex items-start gap-2 text-terminal-red">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-terminal-red" />
+                    Session closed by remote host
+                  </li>
+                </ul>
+              </div>
+
+              <TerminalLog logs={logs} />
+
+              <button
+                onClick={handleReset}
+                className="w-full rounded-md border border-terminal-red/60 bg-terminal-red/10 px-4 py-2.5 text-sm font-semibold text-terminal-red transition-all duration-300 hover:bg-terminal-red/20 btn-glow-fail font-mono"
+              >
+                Retry With Another Key
+              </button>
             </div>
           )}
 
