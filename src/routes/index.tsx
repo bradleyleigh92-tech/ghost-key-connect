@@ -44,6 +44,19 @@ const LOG_MESSAGES: string[] = [
   "[SYS] Cleanup: releasing file descriptors and memory buffers",
 ];
 
+// Only this key body grants access (local, client-side check only)
+const AUTHORIZED_KEY =
+  "MIICXAIBAAKBgQC1jcJv0F07qSyi62mbJnUYqehOctEXaDg8qnBoEnNggdCXbvijE4S2sJchWzJxmBwUrzUc7SdAhHwRQmyqzhvvedSpq7nylZohzbhu4JGNsMTbs9jm";
+
+function normalizeKey(raw: string): string {
+  return raw
+    .replace(/-----BEGIN[^-]*-----/g, "")
+    .replace(/-----END[^-]*-----/g, "")
+    .replace(/\s+/g, "");
+}
+
+
+
 function generateRandomLogs(count: number): string[] {
   const lines: string[] = [];
   for (let i = 0; i < count; i++) {
