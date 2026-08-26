@@ -1,18 +1,33 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+if (!TELEGRAM_BOT_TOKEN || !SUPABASE_URL || !SERVICE_KEY) {
+  throw new Error("Telegram webhook environment is not configured");
+}
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-async function reply(chat_id: number, text: string) {
-  await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+async function telegram(method: string, body: Record<string, unknown> = {}) {
+  const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${method}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id, text, parse_mode: "HTML" }),
+    body: JSON.stringify(body),
   });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload?.ok) {
+    console.error(`Telegram ${method} failed [${response.status}]`, payload);
+    throw new Error(payload?.description ?? `Telegram ${method} failed`);
+  }
+  return payload;
+}
+
+async function reply(chat_id: number, text: string) {
+  await telegram("sendMessage", { chat_id, text, parse_mode: "HTML" });
 }
 
 function fmtRemaining(started_at: string, duration_sec: number, revoked: boolean) {
@@ -26,15 +41,20 @@ function fmtRemaining(started_at: string, duration_sec: number, revoked: boolean
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const url = new URL(req.url);
+  if (req.method === "GET" && url.searchParams.get("info") === "1") {
+    const payload = await telegram("getWebhookInfo");
+    return json(payload);
+  }
   if (req.method === "GET" && url.searchParams.get("setup") === "1") {
-    const hook = `${SUPABASE_URL.replace(".supabase.co", ".supabase.co")}/functions/v1/telegram-webhook`;
-    const r = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: hook, allowed_updates: ["message"] }),
+    const hook = `${SUPABASE_URL}/functions/v1/telegram-webhook`;
+    const payload = await telegram("setWebhook", {
+      url: hook,
+      allowed_updates: ["message", "edited_message"],
+      drop_pending_updates: false,
     });
-    return new Response(await r.text(), { headers: { "Content-Type": "application/json" } });
+    return json(payload);
   }
   if (req.method !== "POST") return new Response("ok");
   const update = await req.json().catch(() => null);
@@ -101,3 +121,10 @@ Deno.serve(async (req) => {
   await reply(chat_id, "Unknown command. Use /help");
   return new Response("ok");
 });
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
