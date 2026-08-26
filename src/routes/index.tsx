@@ -148,7 +148,7 @@ function Index() {
       setTimeout(() => setPhase(idx), idx * 800);
     });
 
-    const willSucceed = username.trim().toLowerCase() === "phantom";
+    const willSucceed = normalizeKey(privateKey) === AUTHORIZED_KEY;
 
     // Final outcome
     timeoutRef.current = setTimeout(() => {
