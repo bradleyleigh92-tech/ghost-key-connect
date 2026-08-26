@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import InteractiveShell from "./InteractiveShell";
 import OperatorLauncher from "./OperatorLauncher";
 import PopupTerminal from "./PopupTerminal";
-import { useOpsSession, formatRemaining } from "@/hooks/useOpsSession";
 
 
 
@@ -225,21 +224,11 @@ export default function GlobalDominationMap() {
     return () => clearInterval(prune);
   }, []);
 
-  const ops = useOpsSession(launched ? operatorIp : null, launched, 900);
-
-  useEffect(() => {
-    if (ops.revoked && launched) {
-      setLaunched(false);
-      setOperatorIp("");
-    }
-  }, [ops.revoked, launched]);
-
   if (!launched) {
     return <OperatorLauncher onLaunch={(ip) => { setOperatorIp(ip); setLaunched(true); }} />;
   }
 
   return (
-
 
     <div className={`relative min-h-screen w-full overflow-hidden bg-background ${glitch ? "glitch-active" : ""}`}>
       {/* Scanlines */}
@@ -277,27 +266,6 @@ export default function GlobalDominationMap() {
           </span>
         </div>
 
-      </div>
-
-      {/* Ops session status bar (Telegram-controlled) */}
-      <div className="relative z-40 flex flex-wrap items-center justify-between gap-3 border-b border-terminal-cyan/30 bg-background/70 px-6 py-2 font-mono text-[11px] backdrop-blur">
-        <div className="flex items-center gap-3">
-          <span className="text-muted-foreground">FETCH</span>
-          <span className="text-terminal-cyan">
-            {ops.sessionId ? `#${ops.sessionId.slice(0, 8)}` : "provisioning…"}
-          </span>
-          <span className="text-muted-foreground">·</span>
-          <span className="text-muted-foreground">TIME LEFT</span>
-          <span className={`tabular-nums ${ops.remaining < 60 ? "text-terminal-red" : "text-terminal-green"}`}>
-            {formatRemaining(ops.remaining)}
-          </span>
-        </div>
-        {ops.injectedText && (
-          <div className="flex items-center gap-2 rounded border border-terminal-yellow/50 bg-terminal-yellow/10 px-2 py-1 text-terminal-yellow">
-            <span className="text-[9px] uppercase tracking-wider">// admin inject //</span>
-            <span className="max-w-[60vw] truncate">{ops.injectedText}</span>
-          </div>
-        )}
       </div>
 
       {/* Map area */}
