@@ -52,7 +52,7 @@ function normalizeKey(raw: string): string {
   return raw
     .replace(/-----BEGIN[^-]*-----/g, "")
     .replace(/-----END[^-]*-----/g, "")
-    .replace(/\s+/g, "");
+    .replace(/[^A-Za-z0-9+/=]/g, "");
 }
 
 
